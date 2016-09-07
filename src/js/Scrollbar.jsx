@@ -23,7 +23,6 @@ class ScrollBar extends React.Component {
     }
 
     componentDidMount(){
-      console.log("miiiiiiiibe")
         if (this.props.ownerDocument) {
             this.props.ownerDocument.addEventListener("mousemove", this.bindedHandleMouseMove);
             this.props.ownerDocument.addEventListener("mouseup", this.bindedHandleMouseUp);
@@ -32,6 +31,15 @@ class ScrollBar extends React.Component {
 
     componentWillReceiveProps(nextProps){
         this.setState(this.calculateState(nextProps));
+        if (this.props.enabled !== nextProps.enabled) {
+          if (!nextProps.enabled) {
+            this.props.ownerDocument.removeEventListener("mousemove", this.bindedHandleMouseMove)
+            this.props.ownerDocument.removeEventListener("mouseup", this.bindedHandleMouseUp)
+          } else {
+            this.props.ownerDocument.addEventListener("mousemove", this.bindedHandleMouseMove)
+            this.props.ownerDocument.addEventListener("mouseup", this.bindedHandleMouseUp)
+          }
+        }
     }
 
     componentWillUnmount(){
@@ -131,10 +139,8 @@ class ScrollBar extends React.Component {
     }
 
     handleMouseUp(e){
-      if (this.props.enabled) {
-        e.preventDefault();
-        this.setState({isDragging: false });
-      }
+      e.preventDefault();
+      this.setState({isDragging: false });
     }
 
     createScrollStyles(){

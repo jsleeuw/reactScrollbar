@@ -47,7 +47,7 @@ export default class ScrollArea extends React.Component{
                 this.scrollXTo(position);
             }
         };
-        
+
         this.evntsPreviousValues = {
             clientX: 0,
             clientY: 0,
@@ -83,8 +83,8 @@ export default class ScrollArea extends React.Component{
     }
 
     render(){
-        let {children, className, contentClassName, ownerDocument} = this.props
-        let withMotion = this.props.smoothScrolling && 
+        let {children, className, contentClassName, ownerDocument, enabled} = this.props
+        let withMotion = this.props.smoothScrolling &&
             (this.state.eventType === eventTypes.wheel || this.state.eventType === eventTypes.api || this.state.eventType === eventTypes.touchEnd);
 
         let scrollbarY = this.canScrollY()? (
@@ -97,6 +97,7 @@ export default class ScrollArea extends React.Component{
                 onPositionChange={this.handleScrollbarYPositionChange.bind(this)}
                 containerStyle={this.props.verticalContainerStyle}
                 scrollbarStyle={this.props.verticalScrollbarStyle}
+                enabled={enabled}
                 smoothScrolling={withMotion}
                 minScrollSize={this.props.minScrollSize}
                 type="vertical"/>
@@ -112,6 +113,7 @@ export default class ScrollArea extends React.Component{
                 onPositionChange={this.handleScrollbarXPositionChange.bind(this)}
                 containerStyle={this.props.horizontalContainerStyle}
                 scrollbarStyle={this.props.horizontalScrollbarStyle}
+                enabled={enabled}
                 smoothScrolling={withMotion}
                 minScrollSize={this.props.minScrollSize}
                 type="horizontal"/>
@@ -126,16 +128,16 @@ export default class ScrollArea extends React.Component{
 
         let classes = 'scrollarea ' + (className || '');
         let contentClasses = 'scrollarea-content ' + (contentClassName || '');
-        
+
         let contentStyle = {
             marginTop: -this.state.topPosition,
             marginLeft: -this.state.leftPosition
         };
         let springifiedContentStyle = withMotion ? modifyObjValues(contentStyle, x => spring(x)) : contentStyle;
-        
+
         return (
             <Motion style={{...this.props.contentStyle, ...springifiedContentStyle}}>
-                { style => 
+                { style =>
                     <div ref={x => this.wrapper = x} style={this.props.style} className={classes} onWheel={this.handleWheel.bind(this)}>
                         <div ref={x => this.content = x}
                             style={style}
@@ -176,14 +178,14 @@ export default class ScrollArea extends React.Component{
     handleTouchMove(e){
         e.preventDefault();
         e.stopPropagation();
-        
+
         let {touches} = e;
         if(touches.length === 1){
             let {clientX, clientY} = touches[0];
 
             let deltaY = this.eventPreviousValues.clientY - clientY;
             let deltaX = this.eventPreviousValues.clientX - clientX;
-            
+
             this.eventPreviousValues = {
                 ...this.eventPreviousValues,
                 deltaY,
@@ -192,7 +194,7 @@ export default class ScrollArea extends React.Component{
                 clientX,
                 timestamp: Date.now()
             };
-            
+
             this.setStateFromEvent(this.composeNewState(-deltaX, -deltaY));
         }
     }
@@ -204,22 +206,22 @@ export default class ScrollArea extends React.Component{
         if(Date.now() - timestamp < 200){
             this.setStateFromEvent(this.composeNewState(-deltaX * 10, -deltaY * 10), eventTypes.touchEnd);
         }
-        
+
         this.eventPreviousValues = {
             ...this.eventPreviousValues,
             deltaY: 0,
             deltaX: 0
-        };      
+        };
     }
-    
+
     handleScrollbarMove(deltaY, deltaX){
-         this.setStateFromEvent(this.composeNewState(deltaX, deltaY));   
+         this.setStateFromEvent(this.composeNewState(deltaX, deltaY));
     }
-    
+
     handleScrollbarXPositionChange(position){
         this.scrollXTo(position);
     }
-    
+
     handleScrollbarYPositionChange(position){
         this.scrollYTo(position);
     }
@@ -227,7 +229,7 @@ export default class ScrollArea extends React.Component{
     handleWheel(e){
         let deltaY = e.deltaY;
         let deltaX = e.deltaX;
-        
+
         if(this.props.swapWheelAxes){
             [deltaY, deltaX] = [deltaX, deltaY];
         }
@@ -265,7 +267,7 @@ export default class ScrollArea extends React.Component{
 
     composeNewState(deltaX, deltaY){
         let newState = this.computeSizes();
-        
+
         if(this.canScrollY(newState)){
             newState.topPosition = this.computeTopPosition(deltaY, newState);
         }
@@ -285,8 +287,8 @@ export default class ScrollArea extends React.Component{
         let newLeftPosition = this.state.leftPosition - deltaX;
         return this.normalizeLeftPosition(newLeftPosition, sizes);
     }
-    
-    normalizeTopPosition(newTopPosition, sizes){    
+
+    normalizeTopPosition(newTopPosition, sizes){
         if(newTopPosition > sizes.realHeight - sizes.containerHeight){
             newTopPosition = sizes.realHeight - sizes.containerHeight;
         }
@@ -295,7 +297,7 @@ export default class ScrollArea extends React.Component{
         }
         return newTopPosition;
     }
-    
+
     normalizeLeftPosition(newLeftPosition, sizes){
         if(newLeftPosition > sizes.realWidth - sizes.containerWidth){
             newLeftPosition = sizes.realWidth - sizes.containerWidth;
@@ -334,7 +336,7 @@ export default class ScrollArea extends React.Component{
     scrollBottom(){
         this.scrollYTo((this.state.realHeight - this.state.containerHeight));
     }
-    
+
     scrollLeft(){
         this.scrollXTo(0);
     }
@@ -349,7 +351,7 @@ export default class ScrollArea extends React.Component{
             this.setStateFromEvent({topPosition: position}, eventTypes.api);
         }
     }
-    
+
     scrollXTo(leftPosition){
         if(this.canScrollX()){
             let position = this.normalizeLeftPosition(leftPosition, this.computeSizes());
