@@ -62,7 +62,7 @@ class ScrollBar extends React.Component {
 
         let scrollPosition = (props.containerSize - scrollSize) * fractionalPosition;
         return {
-            scrollSize: scrollSize,
+            scrollSize: scrollSize - 20,
             position: Math.round(scrollPosition)
         };
     }
