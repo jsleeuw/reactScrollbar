@@ -100,6 +100,7 @@ export default class ScrollArea extends React.Component{
                 enabled={enabled}
                 smoothScrolling={withMotion}
                 minScrollSize={this.props.minScrollSize}
+                scrollBarBottomOffset={this.props.scrollBarBottomOffset}
                 type="vertical"/>
         ): null;
 
@@ -405,7 +406,8 @@ ScrollArea.propTypes = {
     ownerDocument: React.PropTypes.any,
     smoothScrolling: React.PropTypes.bool,
     minScrollSize: React.PropTypes.number,
-    swapWheelAxes: React.PropTypes.bool
+    swapWheelAxes: React.PropTypes.bool,
+    scrollBarBottomOffset: React.PropTypes.number
 };
 
 ScrollArea.defaultProps = {

@@ -59,10 +59,9 @@ class ScrollBar extends React.Component {
         let fractionalPosition = this.calculateFractionalPosition(props.realSize, props.containerSize, props.position);
         let proportionalToPageScrollSize = props.containerSize * props.containerSize / props.realSize;
         let scrollSize = proportionalToPageScrollSize < props.minScrollSize ? props.minScrollSize : proportionalToPageScrollSize;
-
         let scrollPosition = (props.containerSize - scrollSize) * fractionalPosition;
         return {
-            scrollSize: scrollSize - 20,
+            scrollSize: scrollSize,
             position: Math.round(scrollPosition)
         };
     }
@@ -146,7 +145,7 @@ class ScrollBar extends React.Component {
     createScrollStyles(){
         if(this.props.type === 'vertical'){
             return {
-                height: this.state.scrollSize,
+                height: this.state.scrollSize - this.props.scrollBarBottomOffset,
                 marginTop: this.state.position
             };
         } else {
@@ -178,12 +177,14 @@ ScrollBar.propTypes = {
     ownerDocument: React.PropTypes.any,
     smoothScrolling: React.PropTypes.bool,
     minScrollSize: React.PropTypes.number,
-    enabled: React.PropTypes.bool
+    enabled: React.PropTypes.bool,
+    scrollBarBottomOffset: React.PropTypes.number
 };
 
 ScrollBar.defaultProps = {
     type : 'vertical',
     smoothScrolling: false,
-    enabled: true
+    enabled: true,
+    scrollBarBottomOffset: 50
 };
 export default ScrollBar;
